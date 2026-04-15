@@ -1,407 +1,564 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM 22: Elite Protocol</title>
-    
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Tailwind Config for Custom Colors -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'void-black': '#050505',
-                        'cold-blue': '#0ea5e9',
-                        'ice-white': '#e2e8f0',
-                        'danger-red': '#ef4444',
-                        'system-gray': '#1e293b',
-                    },
-                    fontFamily: {
-                        mono: ['"Courier New"', 'Courier', 'monospace'],
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    }
-                }
-            }
-        }
-    </script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Металл Склад</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #020617;
-            color: #e2e8f0;
-            font-family: 'Courier New', Courier, monospace;
+            background: #0a0c10;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 12px;
+            color: white;
+            min-height: 100vh;
         }
-        ::-webkit-scrollbar {
-            width: 8px;
+
+        .title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #facc15;
         }
-        ::-webkit-scrollbar-track {
-            background: #0f172a; 
+
+        /* БЛОК ПОИСКА */
+        .search-box {
+            background: #11151c;
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #2d3748;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #1e293b; 
-            border-radius: 4px;
+        .search-row {
+            display: flex;
+            gap: 8px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #334155; 
+        .search-row input {
+            flex: 2;
+            background: #0a0c10;
+            border: 1px solid #2d3748;
+            border-radius: 30px;
+            padding: 10px;
+            color: white;
+            font-size: 13px;
+            text-align: center;
         }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(30, 41, 59, 0.8);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        .search-row button {
+            flex: 1;
+            background: #3b82f6;
+            border: none;
+            border-radius: 30px;
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
         }
-        .glow-text {
-            text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+
+        /* БЛОК ДОБАВЛЕНИЯ */
+        .add-box {
+            background: #11151c;
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #2d3748;
         }
-        .crt-line {
+        .add-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .add-row input {
+            flex: 1;
+            background: #0a0c10;
+            border: 1px solid #2d3748;
+            border-radius: 30px;
+            padding: 10px;
+            color: white;
+            font-size: 13px;
+            text-align: center;
+        }
+        .add-btn {
+            background: #3b82f6;
+            border: none;
+            border-radius: 30px;
+            padding: 10px;
+            color: white;
+            font-weight: bold;
             width: 100%;
-            height: 2px;
-            background: rgba(14, 165, 233, 0.1);
-            position: fixed;
-            animation: scanline 5s linear infinite;
-            pointer-events: none;
-            z-index: 50;
+            cursor: pointer;
+            font-size: 13px;
         }
-        @keyframes scanline {
-            0% { top: -10%; }
-            100% { top: 110%; }
+
+        .search-result {
+            margin-top: 10px;
+            background: #0a0c10;
+            border-radius: 14px;
+            padding: 10px;
+            display: none;
+        }
+        .search-result.show {
+            display: block;
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 10px;
+            color: #4b5563;
+            margin-bottom: 10px;
+        }
+
+        /* ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ */
+        .scroll-x {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+        }
+        .cards-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* КАРТОЧКА */
+        .card {
+            width: 93vw;
+            min-width: 93vw;
+            background: #11151c;
+            border-radius: 24px;
+            padding: 14px;
+            border: 2px solid #facc15;
+            scroll-snap-align: start;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .metal-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #facc15;
+        }
+        .metal-price {
+            background: #1e293b;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        .del-btn {
+            background: none;
+            border: 1px solid #ef4444;
+            border-radius: 20px;
+            padding: 4px 10px;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .stat {
+            background: #0a0c10;
+            border-radius: 14px;
+            padding: 8px;
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 9px;
+            color: #8a8f99;
+            margin-bottom: 3px;
+        }
+        .stat-value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .input-line {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .input-line input {
+            flex: 1;
+            background: #0a0c10;
+            border: 1px solid #2d3748;
+            border-radius: 30px;
+            padding: 8px;
+            color: white;
+            font-size: 13px;
+            text-align: center;
+        }
+        .calc-result {
+            background: #0a0c10;
+            border: 1px solid #2d3748;
+            border-radius: 30px;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #4ade80;
+            min-width: 80px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .btn-in {
+            flex: 1;
+            background: #10b981;
+            border: none;
+            border-radius: 30px;
+            padding: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-out {
+            flex: 1;
+            background: #ef4444;
+            border: none;
+            border-radius: 30px;
+            padding: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .history-toggle {
+            background: none;
+            border: none;
+            color: #60a5fa;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+        .history-list {
+            margin-top: 8px;
+            display: none;
+        }
+        .history-list.show {
+            display: block;
+        }
+        .day-item {
+            border: 1px solid #2d3748;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+        .day-title {
+            background: #1a1f2a;
+            padding: 6px 10px;
+            font-weight: bold;
+            color: #facc15;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+        }
+        .day-content {
+            padding: 6px;
+            display: none;
+        }
+        .day-content.show {
+            display: block;
+        }
+        .history-entry {
+            background: #0f1218;
+            border-radius: 8px;
+            padding: 5px 8px;
+            margin-bottom: 5px;
+            font-size: 9px;
+            border-left: 2px solid;
+        }
+
+        .empty {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: #4b5563;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+<div class="title">⚙️ МЕТАЛЛ СКЛАД</div>
 
-        const AudioEngine = () => {
-            const [isPlaying, setIsPlaying] = useState(false);
-            const audioCtxRef = useRef(null);
-            const nodeRef = useRef(null);
+<div class="search-box">
+    <div class="search-row">
+        <input type="text" id="searchDate" placeholder="14.04.2026">
+        <button id="searchBtn">НАЙТИ</button>
+    </div>
+    <div id="searchResult" class="search-result"></div>
+</div>
 
-            const toggleNoise = () => {
-                if (isPlaying) {
-                    audioCtxRef.current.close();
-                    setIsPlaying(false);
-                } else {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    const ctx = new AudioContext();
-                    audioCtxRef.current = ctx;
+<div class="add-box">
+    <div class="add-row">
+        <input type="text" id="newName" placeholder="Название металла">
+        <input type="number" id="newPrice" placeholder="Цена СМ/кг">
+    </div>
+    <button id="addBtn" class="add-btn">+ ДОБАВИТЬ МЕТАЛЛ</button>
+</div>
 
-                    const bufferSize = 4096;
-                    const brownNoise = (function() {
-                        var lastOut = 0;
-                        var node = ctx.createScriptProcessor(bufferSize, 1, 1);
-                        node.onaudioprocess = function(e) {
-                            var output = e.outputBuffer.getChannelData(0);
-                            for (var i = 0; i < bufferSize; i++) {
-                                var white = Math.random() * 2 - 1;
-                                output[i] = (lastOut + (0.02 * white)) / 1.02;
-                                lastOut = output[i];
-                                output[i] *= 3.5;
-                            }
-                        }
-                        return node;
-                    })();
+<div class="hint">← → Листай вправо/влево</div>
 
-                    brownNoise.connect(ctx.destination);
-                    nodeRef.current = brownNoise;
-                    setIsPlaying(true);
+<div class="scroll-x">
+    <div class="cards-row" id="cardsContainer"></div>
+</div>
+
+<footer>Автосохранение | Валюта: сомони (СМ)</footer>
+
+<script>
+    let metals = [];
+
+    function save() {
+        localStorage.setItem('metals_data', JSON.stringify(metals));
+    }
+
+    function load() {
+        let data = localStorage.getItem('metals_data');
+        if(data) metals = JSON.parse(data);
+        else metals = [];
+        render();
+    }
+
+    function addMetal() {
+        let name = document.getElementById('newName').value.trim();
+        let price = parseFloat(document.getElementById('newPrice').value);
+        if(!name) { alert('Введите название'); return; }
+        if(isNaN(price) || price <= 0) { alert('Введите цену'); return; }
+        metals.push({
+            id: Date.now(),
+            name: name,
+            price: price,
+            stock: 0,
+            history: []
+        });
+        save();
+        render();
+        document.getElementById('newName').value = '';
+        document.getElementById('newPrice').value = '';
+    }
+
+    function deleteMetal(id) {
+        if(confirm('Удалить металл?')) {
+            metals = metals.filter(m => m.id != id);
+            save();
+            render();
+        }
+    }
+
+    function updateCalc(id) {
+        let m = metals.find(x => x.id == id);
+        if(!m) return;
+        let kg = parseFloat(document.getElementById(`kg_${id}`).value);
+        if(isNaN(kg) || kg <= 0) {
+            document.getElementById(`calc_${id}`).innerHTML = '0 СМ';
+        } else {
+            document.getElementById(`calc_${id}`).innerHTML = (kg * m.price).toFixed(1) + ' СМ';
+        }
+    }
+
+    function addIncome(id) {
+        let m = metals.find(x => x.id == id);
+        let kg = parseFloat(document.getElementById(`kg_${id}`).value);
+        let priceKg = parseFloat(document.getElementById(`pr_${id}`).value);
+        if(isNaN(kg) || kg <= 0) { alert('Введите кг'); return; }
+        if(isNaN(priceKg) || priceKg <= 0) { alert('Введите цену'); return; }
+        let sum = kg * priceKg;
+        m.stock += kg;
+        m.history.unshift({
+            type: 'in',
+            kg: kg,
+            priceKg: priceKg,
+            sum: sum,
+            date: new Date().toLocaleString()
+        });
+        save();
+        render();
+    }
+
+    function addOutcome(id) {
+        let m = metals.find(x => x.id == id);
+        let kg = parseFloat(document.getElementById(`kg_${id}`).value);
+        let priceKg = parseFloat(document.getElementById(`pr_${id}`).value);
+        if(isNaN(kg) || kg <= 0) { alert('Введите кг'); return; }
+        if(isNaN(priceKg) || priceKg <= 0) { alert('Введите цену'); return; }
+        if(kg > m.stock) { alert('Не хватает на складе'); return; }
+        let sum = kg * priceKg;
+        m.stock -= kg;
+        m.history.unshift({
+            type: 'out',
+            kg: kg,
+            priceKg: priceKg,
+            sum: sum,
+            date: new Date().toLocaleString()
+        });
+        save();
+        render();
+    }
+
+    function toggleHistory(id) {
+        let box = document.getElementById(`history_${id}`);
+        if(box) box.classList.toggle('show');
+    }
+
+    function toggleDay(dayId) {
+        let box = document.getElementById(`day_${dayId}`);
+        if(box) box.classList.toggle('show');
+    }
+
+    function searchDay() {
+        let query = document.getElementById('searchDate').value.trim();
+        if(!query) { alert('Введите дату'); return; }
+        let inKg = 0, inSum = 0, outKg = 0, outSum = 0;
+        let found = [];
+        metals.forEach(m => {
+            m.history.forEach(h => {
+                if(h.date.includes(query)) {
+                    if(h.type == 'in') { inKg += h.kg; inSum += h.sum; }
+                    else { outKg += h.kg; outSum += h.sum; }
+                    if(!found.includes(m.name)) found.push(m.name);
                 }
-            };
-
-            return { isPlaying, toggleNoise };
-        };
-
-        const System22 = () => {
-            const [view, setView] = useState('dashboard');
-            const [streak, setStreak] = useState(0);
-            const [lastCheckIn, setLastCheckIn] = useState(null);
-            const [patterns, setPatterns] = useState([]);
-            const [timer, setTimer] = useState(0);
-            const [isTimerRunning, setIsTimerRunning] = useState(false);
-            const { isPlaying: isNoiseOn, toggleNoise } = AudioEngine();
-
-            useEffect(() => {
-                const savedStreak = localStorage.getItem('s22_streak');
-                const savedLastCheckIn = localStorage.getItem('s22_lastCheck');
-                const savedPatterns = localStorage.getItem('s22_patterns');
-
-                if (savedStreak) setStreak(parseInt(savedStreak));
-                if (savedLastCheckIn) setLastCheckIn(savedLastCheckIn);
-                if (savedPatterns) setPatterns(JSON.parse(savedPatterns));
-            }, []);
-
-            useEffect(() => {
-                localStorage.setItem('s22_patterns', JSON.stringify(patterns));
-            }, [patterns]);
-
-            useEffect(() => {
-                let interval = null;
-                if (isTimerRunning && timer > 0) {
-                    interval = setInterval(() => {
-                        setTimer(timer - 1);
-                    }, 1000);
-                } else if (timer === 0 && isTimerRunning) {
-                    setIsTimerRunning(false);
-                    const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-system-check-963.mp3');
-                    audio.play().catch(e => console.log("Audio play failed"));
-                }
-                return () => clearInterval(interval);
-            }, [isTimerRunning, timer]);
-
-            const handleCheckIn = (success) => {
-                const today = new Date().toDateString();
-                if (lastCheckIn === today) return;
-
-                if (success) {
-                    const newStreak = streak + 1;
-                    setStreak(newStreak);
-                    localStorage.setItem('s22_streak', newStreak);
-                } else {
-                    setStreak(0);
-                    localStorage.setItem('s22_streak', 0);
-                }
-                setLastCheckIn(today);
-                localStorage.setItem('s22_lastCheck', today);
-            };
-
-            const addLog = (text, type) => {
-                const newPattern = {
-                    id: Date.now(),
-                    date: new Date().toLocaleString('ar-MA'),
-                    text: text,
-                    type: type
-                };
-                setPatterns([newPattern, ...patterns]);
-            };
-
-            const startTimer = (minutes) => {
-                setTimer(minutes * 60);
-                setIsTimerRunning(true);
-            };
-
-            const formatTime = (seconds) => {
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            };
-
-            const Dashboard = () => (
-                <div className="space-y-6 animate-fade-in">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="glass-panel p-4 rounded-sm border-l-4 border-cold-blue">
-                            <h3 className="text-xs text-gray-400 uppercase tracking-widest">Protocol 22 Status</h3>
-                            <div className="mt-2 flex items-baseline gap-2">
-                                <span className="text-4xl font-mono font-bold text-cold-blue glow-text">{streak}</span>
-                                <span className="text-sm text-gray-500">/ 22 DAYS</span>
-                            </div>
-                            <div className="w-full bg-system-gray h-1 mt-2">
-                                <div className="bg-cold-blue h-1 transition-all duration-500" style={{ width: `${Math.min((streak / 22) * 100, 100)}%` }}></div>
-                            </div>
-                        </div>
-                        <div className="glass-panel p-4 rounded-sm border-r-4 border-white">
-                             <h3 className="text-xs text-gray-400 uppercase tracking-widest">Identity Level</h3>
-                             <div className="mt-2 text-xl font-bold">
-                                {streak < 7 ? "PROJECT: ZOMBIE" : streak < 21 ? "PROJECT: AWAKENING" : "ELITE: SOVEREIGN"}
-                             </div>
-                             <p className="text-xs text-gray-500 mt-1">
-                                {streak < 7 ? "المراقب يحاول السيطرة..." : "السيستم يعمل بكفاءة."}
-                             </p>
-                        </div>
-                    </div>
-
-                    <div className="glass-panel p-6 rounded-sm">
-                        <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <span className="w-2 h-2 bg-cold-blue rounded-full animate-pulse"></span>
-                            تقرير الصباح (Morning Report)
-                        </h2>
-                        {lastCheckIn === new Date().toDateString() ? (
-                            <div className="text-center py-4 text-green-500 border border-green-900/30 bg-green-900/10 rounded">
-                                تم تسجيل البيانات لهذا اليوم. انتظر الغد.
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                <p className="text-sm text-gray-400">هل استيقظت قبل 05:05؟ هل الهاتف بقي خارج الغرفة؟</p>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <button 
-                                        onClick={() => handleCheckIn(true)}
-                                        className="py-3 border border-cold-blue text-cold-blue hover:bg-cold-blue hover:text-black transition-colors font-bold"
-                                    >
-                                        نعم (تأكيد السيطرة)
-                                    </button>
-                                    <button 
-                                        onClick={() => {
-                                            handleCheckIn(false);
-                                            addLog("فشل بروتوكول الصباح. تم تصفير العداد.", "failure");
-                                        }}
-                                        className="py-3 border border-danger-red text-danger-red hover:bg-danger-red hover:text-white transition-colors font-bold"
-                                    >
-                                        لا (إعادة ضبط)
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+            });
+        });
+        let resDiv = document.getElementById('searchResult');
+        if(inKg == 0 && outKg == 0) {
+            resDiv.innerHTML = '<div style="background:#1a1a1a; padding:10px;">❌ Ничего не найдено</div>';
+        } else {
+            resDiv.innerHTML = `
+                <div style="background:#1a1a1a; padding:10px;">
+                    <div>📅 ${query} | ${found.join(', ')}</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                        <div>📥 ПРИХОД<br><b>${inKg.toFixed(1)} кг</b><br>${inSum.toFixed(1)} СМ</div>
+                        <div>📤 РАСХОД<br><b>${outKg.toFixed(1)} кг</b><br>${outSum.toFixed(1)} СМ</div>
+                        <div>💰 ОБОРОТ<br><b>${(inSum+outSum).toFixed(1)} СМ</b></div>
+                        <div>📦 ВСЕГО КГ<br><b>${(inKg+outKg).toFixed(1)} кг</b></div>
                     </div>
                 </div>
-            );
+            `;
+        }
+        resDiv.classList.add('show');
+    }
 
-            const DeepWork = () => (
-                <div className="flex flex-col items-center justify-center h-full space-y-8 animate-fade-in">
-                    <div className="text-center space-y-2">
-                        <h2 className="text-2xl font-bold tracking-widest text-cold-blue glow-text">DEEP WORK CHAMBER</h2>
-                        <p className="text-xs text-gray-500">العزلة هي بوابة العظمة</p>
-                    </div>
-
-                    <div className="text-8xl font-mono font-bold tracking-tighter text-white tabular-nums">
-                        {formatTime(timer)}
-                    </div>
-
-                    {!isTimerRunning ? (
-                        <div className="flex gap-4">
-                            <button onClick={() => startTimer(25)} className="px-6 py-2 border border-gray-600 hover:border-white transition-all">25m</button>
-                            <button onClick={() => startTimer(50)} className="px-6 py-2 border border-gray-600 hover:border-white transition-all">50m</button>
-                            <button onClick={() => startTimer(90)} className="px-6 py-2 border border-gray-600 hover:border-white transition-all">90m</button>
+    function render() {
+        let container = document.getElementById('cardsContainer');
+        if(metals.length == 0) {
+            container.innerHTML = '<div class="empty">📭 Нет металлов<br>➕ Добавьте первый</div>';
+            return;
+        }
+        container.innerHTML = metals.map(m => {
+            let totalVal = m.stock * m.price;
+            let inKg = 0, inSum = 0, outKg = 0, outSum = 0;
+            m.history.forEach(h => {
+                if(h.type == 'in') { inKg += h.kg; inSum += h.sum; }
+                else { outKg += h.kg; outSum += h.sum; }
+            });
+            let groups = {};
+            m.history.forEach(h => {
+                let d = h.date.split(',')[0];
+                if(!groups[d]) groups[d] = [];
+                groups[d].push(h);
+            });
+            let days = Object.keys(groups).sort().reverse();
+            let historyHtml = days.length == 0 ? '<div style="padding:8px;">— нет записей —</div>' :
+                days.map(d => {
+                    let dIn = 0, dOut = 0;
+                    groups[d].forEach(h => { if(h.type == 'in') dIn += h.sum; else dOut += h.sum; });
+                    let dayId = m.id + d.replace(/[^0-9]/g, '');
+                    return `
+                        <div class="day-item">
+                            <div class="day-title" onclick="toggleDay('${dayId}')">
+                                <span>📅 ${d}</span>
+                                <span>+${dIn.toFixed(0)} -${dOut.toFixed(0)}</span>
+                            </div>
+                            <div class="day-content" id="day_${dayId}">
+                                ${groups[d].map(h => `
+                                    <div class="history-entry" style="border-left-color:${h.type == 'in' ? '#10b981' : '#ef4444'}">
+                                        <b>${h.type == 'in' ? 'ПРИХОД' : 'РАСХОД'}</b> ${h.kg.toFixed(1)} кг × ${h.priceKg.toFixed(1)} = ${h.sum.toFixed(1)} СМ
+                                        <div style="font-size:8px;">${h.date}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
-                    ) : (
-                        <div className="text-center animate-pulse-slow text-danger-red">
-                            <p>لا يوجد زر إيقاف.</p>
-                            <p className="text-xs mt-2">إما أن تنهي الوقت، أو تغلق الصفحة وتعلن الهزيمة.</p>
-                        </div>
-                    )}
-
-                    <button 
-                        onClick={toggleNoise}
-                        className={`mt-8 px-8 py-4 border rounded-sm transition-all flex items-center gap-3 ${isNoiseOn ? 'bg-cold-blue text-black border-cold-blue' : 'border-gray-600 text-gray-400 hover:text-white'}`}
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                        {isNoiseOn ? "BROWN NOISE ACTIVE" : "ACTIVATE NOISE SHIELD"}
-                    </button>
+                    `;
+                }).join('');
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="metal-name">${escapeHtml(m.name)}</span>
+                        <span class="metal-price">💰 ${m.price.toFixed(1)} СМ/кг</span>
+                        <button class="del-btn" onclick="deleteMetal(${m.id})">✕</button>
+                    </div>
+                    <div class="stats">
+                        <div class="stat"><div class="stat-label">ЗАПАС</div><div class="stat-value">${m.stock.toFixed(1)} кг</div></div>
+                        <div class="stat"><div class="stat-label">СТОИМОСТЬ</div><div class="stat-value">${totalVal.toFixed(1)} СМ</div></div>
+                        <div class="stat"><div class="stat-label">ПРИХОД</div><div class="stat-value">${inKg.toFixed(1)} кг</div><div style="font-size:9px;">${inSum.toFixed(1)} СМ</div></div>
+                        <div class="stat"><div class="stat-label">РАСХОД</div><div class="stat-value">${outKg.toFixed(1)} кг</div><div style="font-size:9px;">${outSum.toFixed(1)} СМ</div></div>
+                    </div>
+                    <div class="input-line">
+                        <input type="number" id="kg_${m.id}" placeholder="Кг" step="0.1" oninput="updateCalc(${m.id})">
+                        <div class="calc-result" id="calc_${m.id}">0 СМ</div>
+                    </div>
+                    <div class="input-line">
+                        <input type="number" id="pr_${m.id}" placeholder="Цена СМ/кг" step="0.1" value="${m.price.toFixed(1)}">
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-in" onclick="addIncome(${m.id})">ПРИХОД</button>
+                        <button class="btn-out" onclick="addOutcome(${m.id})">РАСХОД</button>
+                    </div>
+                    <button class="history-toggle" onclick="toggleHistory(${m.id})">📜 ИСТОРИЯ ▼</button>
+                    <div id="history_${m.id}" class="history-list">${historyHtml}</div>
                 </div>
-            );
+            `;
+        }).join('');
+    }
 
-            const Logs = () => {
-                const [input, setInput] = useState("");
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if(m == '&') return '&amp;';
+            if(m == '<') return '&lt;';
+            if(m == '>') return '&gt;';
+            return m;
+        });
+    }
 
-                const handleSubmit = (e) => {
-                    e.preventDefault();
-                    if (!input.trim()) return;
-                    addLog(input, "intel");
-                    setInput("");
-                };
+    document.getElementById('addBtn').onclick = addMetal;
+    document.getElementById('searchBtn').onclick = searchDay;
+    window.deleteMetal = deleteMetal;
+    window.addIncome = addIncome;
+    window.addOutcome = addOutcome;
+    window.toggleHistory = toggleHistory;
+    window.toggleDay = toggleDay;
+    window.updateCalc = updateCalc;
 
-                return (
-                    <div className="h-full flex flex-col space-y-4 animate-fade-in">
-                        <div className="glass-panel p-4 rounded-sm">
-                            <h2 className="text-lg font-bold mb-2">الصندوق الأسود (Pattern Recognition)</h2>
-                            <p className="text-xs text-gray-400 mb-4">سجل الملاحظات، الدوافع، ولحظات الضعف. حول الألم إلى بيانات.</p>
-                            <form onSubmit={handleSubmit} className="flex gap-2">
-                                <input 
-                                    type="text" 
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    placeholder="اكتب الملاحظة هنا..."
-                                    className="flex-1 bg-black/50 border border-gray-700 p-2 text-sm focus:border-cold-blue outline-none text-white"
-                                />
-                                <button type="submit" className="bg-white/10 px-4 py-2 hover:bg-cold-blue hover:text-black transition-colors">تسجيل</button>
-                            </form>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto space-y-2 pr-2">
-                            {patterns.length === 0 && <p className="text-center text-gray-600 mt-10">لا توجد بيانات (No Data).</p>}
-                            {patterns.map(p => (
-                                <div key={p.id} className={`p-3 border-l-2 text-sm font-mono ${p.type === 'failure' ? 'border-danger-red bg-red-900/10' : 'border-cold-blue bg-blue-900/5'}`}>
-                                    <div className="text-xs text-gray-500 mb-1">{p.date}</div>
-                                    <div className="text-gray-300">{p.text}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                );
-            };
-
-            const Protocol = () => (
-                <div className="glass-panel p-6 rounded-sm h-full overflow-y-auto animate-fade-in text-justify">
-                    <h2 className="text-2xl font-bold text-cold-blue mb-6 border-b border-gray-800 pb-2">THE ELITE MANIFESTO</h2>
-                    <div className="space-y-6 text-sm leading-relaxed text-gray-300 font-mono">
-                        <p><strong className="text-white">1. السيادة المطلقة:</strong> أنا لست جسدي. أنا المراقب. الجسد آلة بيولوجية تحتاج للترويض، وليس للتفاوض.</p>
-                        <p><strong className="text-white">2. التنفيذ البارد:</strong> الشعور لا يهم. الرغبة لا تهم. الفعل هو الحقيقة الوحيدة. افعل ما يجب فعله بغض النظر عن الطقس الداخلي.</p>
-                        <p><strong className="text-white">3. الموت أو التطور:</strong> العودة لمنطقة الراحة ليست خياراً، بل انتحاراً. السفن أُحرقت.</p>
-                        <p><strong className="text-white">4. قانون الصمت:</strong> الحديث يضيع الطاقة. الصمت يبني الضغط. استخدم الضغط كوقود.</p>
-                        <p><strong className="text-white">5. 05:00 صباحاً:</strong> هذا هو الوقت الذي يُقسم فيه العالم إلى أسياد وعبيد. كن مستيقظاً حين ينامون.</p>
-                        <div className="mt-8 pt-4 border-t border-gray-800 text-center text-xs text-gray-500">
-                            SYSTEM V1.0 // DESIGNED FOR THE GRAND LAB RAT
-                        </div>
-                    </div>
-                </div>
-            );
-
-            return (
-                <div className="min-h-screen flex flex-col max-w-md mx-auto relative overflow-hidden">
-                    <div className="crt-line"></div>
-                    
-                    <header className="p-4 flex justify-between items-center border-b border-gray-800 bg-black/50 backdrop-blur-md z-10 sticky top-0">
-                        <h1 className="text-cold-blue font-bold tracking-wider text-sm">SYSTEM <span className="text-white">22</span></h1>
-                        <div className="flex gap-2 text-xs font-mono">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                            ONLINE
-                        </div>
-                    </header>
-
-                    <main className="flex-1 p-4 overflow-hidden relative z-0">
-                        {view === 'dashboard' && <Dashboard />}
-                        {view === 'deepwork' && <DeepWork />}
-                        {view === 'logs' && <Logs />}
-                        {view === 'protocol' && <Protocol />}
-                    </main>
-
-                    <nav className="border-t border-gray-800 bg-black p-2 z-10">
-                        <div className="grid grid-cols-4 gap-1">
-                            <button 
-                                onClick={() => setView('dashboard')}
-                                className={`p-3 text-xs font-bold uppercase tracking-wide transition-all ${view === 'dashboard' ? 'bg-cold-blue text-black' : 'hover:bg-gray-900 text-gray-500'}`}
-                            >
-                                Status
-                            </button>
-                            <button 
-                                onClick={() => setView('deepwork')}
-                                className={`p-3 text-xs font-bold uppercase tracking-wide transition-all ${view === 'deepwork' ? 'bg-cold-blue text-black' : 'hover:bg-gray-900 text-gray-500'}`}
-                            >
-                                Focus
-                            </button>
-                            <button 
-                                onClick={() => setView('logs')}
-                                className={`p-3 text-xs font-bold uppercase tracking-wide transition-all ${view === 'logs' ? 'bg-cold-blue text-black' : 'hover:bg-gray-900 text-gray-500'}`}
-                            >
-                                Data
-                            </button>
-                            <button 
-                                onClick={() => setView('protocol')}
-                                className={`p-3 text-xs font-bold uppercase tracking-wide transition-all ${view === 'protocol' ? 'bg-cold-blue text-black' : 'hover:bg-gray-900 text-gray-500'}`}
-                            >
-                                Rules
-                            </button>
-                        </div>
-                    </nav>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<System22 />);
-    </script>
+    load();
+</script>
 </body>
 </html>
